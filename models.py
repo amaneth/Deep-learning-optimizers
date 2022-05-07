@@ -5,30 +5,45 @@ import pandas as pd
 class NeuralNetwork:
     def __init__(self,input_dim,hidden_dim,output_dim,optim='adam',batch_size=64,epochs=10, lr=0.001, gamma1=0.9,
             gamma2=0.9,epsillon=1e-8, alpha=0.2):
+
         np.random.seed(0)
         self.optim=optim
-        self.weights1 = np.random.rand(input_dim,hidden_dim)*1e-1
-        self.weights2 = np.random.rand(hidden_dim,output_dim)*1e-1  
-        self.vd_weights1=np.zeros((input_dim,hidden_dim))   
-        self.vd_weights2=np.zeros((hidden_dim,output_dim))   
-        self.sd_weights1=np.zeros((input_dim,hidden_dim))   
-        self.sd_weights2=np.zeros((hidden_dim,output_dim))    
-        self.output = None
-        self.b1= np.random.rand(1,hidden_dim)
-        self.b2= np.random.rand(1,output_dim)
-        self.vd_bias1=np.zeros((1,hidden_dim))
-        self.vd_bias2=np.zeros((1,output_dim))
-        self.sd_bias1=np.zeros((1,hidden_dim))
-        self.sd_bias2=np.zeros((1,output_dim))
         self.num_epochs = epochs
         self.lr=lr
         self.batch_size=batch_size
-        self.gamma1=gamma1 #
-        self.gamma2=gamma2
-        self.epsillon=epsillon
-        self.alpha=alpha
+
+        #weights initialization
+        self.weights1 = np.random.rand(input_dim,hidden_dim)*1e-1
+        self.weights2 = np.random.rand(hidden_dim,output_dim)*1e-1  
+
+        #first moment estimates of the weights
+        self.vd_weights1=np.zeros((input_dim,hidden_dim))   
+        self.vd_weights2=np.zeros((hidden_dim,output_dim))   
+
+        #second moment estimates of the weights
+        self.sd_weights1=np.zeros((input_dim,hidden_dim))   
+        self.sd_weights2=np.zeros((hidden_dim,output_dim))    
+        self.output = None
+
+        #bias term initialization
+        self.b1= np.random.rand(1,hidden_dim)
+        self.b2= np.random.roand(1,output_dim)
+
+        #first moment estimates of the bias term
+        self.vd_bias1=np.zeros((1,hidden_dim))
+        self.vd_bias2=np.zeros((1,output_dim))
+
+        #second moment estimates of the bias term
+        self.sd_bias1=np.zeros((1,hidden_dim))
+        self.sd_bias2=np.zeros((1,output_dim))
+
+        self.gamma1=gamma1 #first moment constant term
+        self.gamma2=gamma2 #second moment constant term
+        self.epsillon=epsillon #smoothing term
+        self.alpha=alpha #decay rate
+
     def sigmoid(self,x):
-        return 1.0/(1+ np.exp(-x))
+        return 1.0/(1.0+ np.exp(-x))
 
     def sigmoid_derivative(self,x):
         return self.sigmoid(x) * (1.0 - self.sigmoid(x))
